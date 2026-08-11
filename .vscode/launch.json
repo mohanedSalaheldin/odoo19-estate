@@ -7,7 +7,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/odoo-bin",
       "python": "${workspaceFolder}/venv/Scripts/python.exe",
-      "args": ["-c", "${workspaceFolder}/debian/odoo.conf"],
+      "args": ["-c", "${workspaceFolder}/debian/odoo.conf", "-u", "estate"],
       "console": "integratedTerminal",
       "justMyCode": true,
       "rules": [{ "path": "**/site-packages/win32/**", "include": false }]

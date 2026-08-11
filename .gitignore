@@ -2,6 +2,7 @@
 
 !/tutorials/
 !/custom_addons/
+!/my_addons/
 !.gitignore
 !.vscode/
 !/debian/
