@@ -52,11 +52,10 @@ class RealEstate(models.Model):
         string="Garden Orientation",
     )
 
+    property_type_id = fields.Many2one("estate.property.type")
+    offer_ids = fields.One2many("estate.offer", "property_id")
+    salesperson_id = fields.Many2one("res.users", string="Salesperson")
+    buyer_id = fields.Many2one("res.partner", string="Buyer", copy=False)
+    tag_ids = fields.Many2many("property.tag", )
 
-#     value2 = fields.Float(compute="_value_pc", store=True)
-#     description = fields.Text()
-#
-#     @api.depends('value')
-#     def _value_pc(self):
-#         for record in self:
-#             record.value2 = float(record.value) / 100
+

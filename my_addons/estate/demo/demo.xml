@@ -1,4 +1,4 @@
-<odoo>
+<!-- <odoo>
   <data>
     <record id="House0" model="real.estate">
       <field name="name">House 0</field>
@@ -21,4 +21,4 @@
       <field name="price">40</field>
     </record>
   </data>
-</odoo>
+</odoo> -->
