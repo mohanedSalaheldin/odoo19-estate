@@ -16,8 +16,10 @@ Long description of module's purpose
     # always loaded
     "data": [
         "security/res_groups.xml",
-        'security/ir.model.access.csv',
+        "security/ir.model.access.csv",
         "views/views.xml",
+        "views/estate_property_views.xml",
+        "views/estate_menus.xml",
         "views/templates.xml",
     ],
     # only loaded in demonstration mode
