@@ -6,6 +6,14 @@ class EstateOffer(models.Model):
     _name = "estate.offer"
     _description = "estate.offer"
 
+    _sql_constraints = [
+        (
+            "check_price",
+            "CHECK(price > 0)",
+            "The offer price must be strictly positive.",
+        ),
+    ]
+
     price = fields.Float()
     status = fields.Selection(
         [
@@ -37,8 +45,17 @@ class EstateOffer(models.Model):
     def _inverse_date_deadline(self):
         for rec in self:
             if rec.date_deadline:
-                base_date = (
-                    rec.create_date.date() if rec.create_date else fields.Date.today()
-                )
-                # Subtract dates to get the difference in days
+                base_date = (rec.create_date.date() if rec.create_date else fields.Date.today())
                 rec.validity = (rec.date_deadline - base_date).days
+
+    def action_accept(self):
+        for offer in self:
+            offer.status = "accepted"
+            offer.property_id.buyer_id = offer.partner_id
+            offer.property_id.selling_price = offer.price
+        return True
+
+    def action_refuse(self):
+        for offer in self:
+            offer.status = "refused"
+        return True

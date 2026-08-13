@@ -1,11 +1,23 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
+from odoo.tools.float_utils import float_compare, float_is_zero
 
 
 class RealEstate(models.Model):
     _name = "real.estate"
     _description = "estate.estate"
+
+    _check_expected_price = models.Constraint(
+        "CHECK(expected_price > 0)",
+        "The expected price must be strictly positive.",
+    )
+    _check_selling_price = models.Constraint(
+        "CHECK(selling_price >= 0)",
+        "The selling price must be positive.",
+    )
 
     name = fields.Char(string="Name", default="House", required=True)
     active = fields.Boolean(string="Active", default=True, invisible=True)
@@ -35,6 +47,17 @@ class RealEstate(models.Model):
     best_price = fields.Float(
         string="Best Offer", readonly=True, compute="_compute_best_price"
     )
+
+    @api.constrains("selling_price", "expected_price")
+    def _check_selling_price(self):
+        for record in self:
+            if not float_is_zero(record.selling_price, precision_rounding=0.01):
+                min_price = record.expected_price * 0.90
+                
+                if float_compare(record.selling_price, min_price, precision_rounding=0.01) < 0:
+                    raise ValidationError(
+                        _("The selling price cannot be lower than 90% of the expected price!")
+                    )
 
     @api.depends("offer_ids.price")
     def _compute_best_price(self):
@@ -72,6 +95,37 @@ class RealEstate(models.Model):
     offer_ids = fields.One2many("estate.offer", "property_id")
     salesperson_id = fields.Many2one("res.users", string="Salesperson")
     buyer_id = fields.Many2one("res.partner", string="Buyer", copy=False)
-    tag_ids = fields.Many2many(
-        "property.tag",
-    )
+    tag_ids = fields.Many2many("property.tag")
+
+    @api.onchange("garden")
+    def _onchange_garden(self):
+        if self.garden:
+            self.garden_area = 10
+            self.garden_orientation = "north"
+        else:
+            self.garden_area = 0
+            self.garden_orientation = False
+
+    @api.onchange("date_availability")
+    def _onchange_date_availability(self):
+        if self.date_availability and self.date_availability < fields.Date.today():
+            return {
+                "warning": {
+                    "title": _("Warning"),
+                    "message": _("The availability date cannot be set in the past."),
+                }
+            }
+
+    def action_sold(self):
+        for record in self:
+            if record.state == "canceled":
+                raise UserError(_("Canceled properties cannot be set as sold."))
+            record.state = "sold"
+        return True
+
+    def action_cancel(self):
+        for record in self:
+            if record.state == "sold":
+                raise UserError(_("Sold properties cannot be canceled."))
+            record.state = "canceled"
+        return True

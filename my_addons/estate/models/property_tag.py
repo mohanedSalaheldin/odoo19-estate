@@ -5,5 +5,9 @@ class PropertyTager(models.Model):
     _name = "property.tag"
     _description = "property.tag"
 
-    name = fields.Char(required=True)
+    _check_unique_name = models.Constraint(
+        "UNIQUE(name)",
+        "The property tag name must be unique.",
+    )
     
+    name = fields.Char(required=True)
