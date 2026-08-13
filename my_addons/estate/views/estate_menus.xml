@@ -3,6 +3,7 @@
     <menuitem id="estate_menu_root" name="Estate Root">
         <menuitem id="estate_menu_app" name="Advertisements">
             <menuitem id="estate_model_menu" name="Estates" action="real_estate_action"/>
+            <menuitem id="estate_deals_menu" name="Offers" action="real_estate_deals_action"/>
         </menuitem>
         <menuitem id="estate_menu_settings" name="Settings">
             <menuitem id="estate_property_type_menu_action" name="Property Types" action="property_type_action"/>

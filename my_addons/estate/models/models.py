@@ -1,6 +1,6 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class RealEstate(models.Model):
@@ -32,16 +32,32 @@ class RealEstate(models.Model):
     postcode = fields.Char(string="Postcode")
     expected_price = fields.Float(string="Expected Price", required=True)
     selling_price = fields.Float(string="Selling Price", readonly=True, copy=False)
-    best_price = fields.Float(string="Best Offer", readonly=True)
-    description = fields.Text(string="Description")
+    best_price = fields.Float(
+        string="Best Offer", readonly=True, compute="_compute_best_price"
+    )
 
+    @api.depends("offer_ids.price")
+    def _compute_best_price(self):
+        for rec in self:
+            offers = rec.offer_ids.mapped("price")
+            rec.best_price = max(offers) if offers else 0.0
+
+    description = fields.Text(string="Description")
     bedrooms = fields.Integer(string="Bedrooms", default=2)
     living_area = fields.Integer(string="Living Area (sqm)")
     facades = fields.Integer(string="Facades")
     garage = fields.Boolean(string="Garage")
     garden = fields.Boolean(string="Garden")
     garden_area = fields.Integer(string="Garden Area (sqm)")
-    total_area = fields.Integer(string="Total Area (sqm)")
+    total_area = fields.Integer(
+        string="Total Area (sqm)", compute="_compute_total_area"
+    )
+
+    @api.depends("living_area", "garden_area")
+    def _compute_total_area(self):
+        for rec in self:
+            rec.total_area = rec.living_area + rec.garden_area
+
     garden_orientation = fields.Selection(
         selection=[
             ("north", "North"),
@@ -56,6 +72,6 @@ class RealEstate(models.Model):
     offer_ids = fields.One2many("estate.offer", "property_id")
     salesperson_id = fields.Many2one("res.users", string="Salesperson")
     buyer_id = fields.Many2one("res.partner", string="Buyer", copy=False)
-    tag_ids = fields.Many2many("property.tag", )
-
-
+    tag_ids = fields.Many2many(
+        "property.tag",
+    )

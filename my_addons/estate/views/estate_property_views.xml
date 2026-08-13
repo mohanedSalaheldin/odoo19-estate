@@ -41,16 +41,18 @@
                         <group>
                             <field name="expected_price"/>
                             <field name="selling_price"/>
+                            <field name="best_price"/>
                         </group>
                         <notebook>
                             <page string="Description">
                                 <group>
                                     <field name="description"/>
                                     <field name="bedrooms"/>
-                                    <field name="living_area"/>
                                     <field name="garage"/>
                                     <field name="garden"/>
                                     <field name="garden_area"/>
+                                    <field name="living_area"/>
+                                    <field name="total_area"/>
                                 </group>
                             </page>
                             <page string="Other Info">
