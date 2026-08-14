@@ -10,5 +10,10 @@ class PropertyType(models.Model):
         "The property type name must be unique.",
     )
 
+    _order = "sequence desc"
+
+    sequence = fields.Integer(defauly=1)
+
+
     name = fields.Char(string="Name", required=True)
     property_ids = fields.One2many("real.estate","property_type_id")

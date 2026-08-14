@@ -19,6 +19,8 @@ class RealEstate(models.Model):
         "The selling price must be positive.",
     )
 
+    _order = "id desc"
+
     name = fields.Char(string="Name", default="House", required=True)
     active = fields.Boolean(string="Active", default=True, invisible=True)
     state = fields.Selection(

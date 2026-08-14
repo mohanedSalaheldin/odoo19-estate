@@ -9,6 +9,8 @@ class PropertyTager(models.Model):
         "UNIQUE(name)",
         "The property tag name must be unique.",
     )
+
+    _order = "name desc"
     
     name = fields.Char(required=True)
     color = fields.Integer()

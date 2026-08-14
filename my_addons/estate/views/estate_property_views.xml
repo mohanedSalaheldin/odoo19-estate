@@ -25,8 +25,8 @@
         <field name="arch" type="xml">
             <form string="Property Details">
                 <header>
-                    <button name="action_sold" type="object" string="Sold"/>
-                    <button name="action_cancel" type="object" string="Cancel"/>
+                    <button name="action_sold" type="object" string="Sold" invisible="state in ('sold', 'canceled')"/>/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ('sold', 'canceled')"/>/>
                     <field name="state" widget="statusbar" statusbar_visible="new,offer_received,offer_accepted,sold"/>
                 </header>
                 <sheet>
@@ -56,8 +56,8 @@
                                     <field name="bedrooms"/>
                                     <field name="garage" widget="boolean_toggle"/>
                                     <field name="garden" widget="boolean_toggle"/>
-                                    <field name="garden_orientation" widget="radio"/>
-                                    <field name="garden_area"/>
+                                    <field name="garden_orientation" widget="radio" invisible="not garden"/>
+                                    <field name="garden_area" invisible="not garden"/>
                                     <field name="living_area"/>
                                     <field name="total_area"/>
                                 </group>
@@ -69,15 +69,15 @@
                                 </group>
                             </page>
                             <page string="Offers">
-                                <field name="offer_ids">
+                                <field name="offer_ids" readonly="state in ('offer_accepted', 'sold', 'canceled')">
                                     <list editable="bottom">
                                         <field name="price"/>
                                         <field name="partner_id"/>
                                         <field name="validity"/>
                                         <field name="date_deadline"/>
-                                        <button name="action_accept" type="object" icon="fa-check" string="Accept"/>
-                                        <button name="action_refuse" type="object" icon="fa-times" string="Refuse"/>
                                         <field name="status"/>
+                                        <button name="action_accept" invisible="status" type="object" icon="fa-check" string="Accept"/>
+                                        <button name="action_refuse" invisible="status" type="object" icon="fa-times" string="Refuse"/>
                                     </list>
                                 </field>
                             </page>
@@ -91,16 +91,19 @@
         <field name="name">real.estate.view.list</field>
         <field name="model">real.estate</field>
         <field name="arch" type="xml">
-            <list string="Properties">
+            <list string="Properties" decoration-success="state in ('offer_received', 'offer_accepted')"
+              decoration-bf="state == 'offer_accepted'"
+              decoration-muted="state == 'sold'">
                 <field name="name" string="Title"/>
                 <field name="property_type_id"/>
                 <field name="postcode" string="Postcode"/>
                 <field name="tag_ids" widget="many2many_tags"/>
                 <field name="bedrooms" string="Bedrooms"/>
-                <field name="living_area" string="Living Area"/>
+                <field name="living_area" string="Living Area" optional="hide"/>
                 <field name="expected_price" string="Expected Price"/>
                 <field name="selling_price" string="Selling Price"/>
-                <field name="date_availability" string="Date Availability"/>
+                <field name="date_availability" string="Date Availability" optional="hide"/>
+                <field name="state" column_invisible="1"/>
             </list>
         </field>
     </record>
