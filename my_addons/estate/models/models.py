@@ -53,10 +53,17 @@ class RealEstate(models.Model):
         for record in self:
             if not float_is_zero(record.selling_price, precision_rounding=0.01):
                 min_price = record.expected_price * 0.90
-                
-                if float_compare(record.selling_price, min_price, precision_rounding=0.01) < 0:
+
+                if (
+                    float_compare(
+                        record.selling_price, min_price, precision_rounding=0.01
+                    )
+                    < 0
+                ):
                     raise ValidationError(
-                        _("The selling price cannot be lower than 90% of the expected price!")
+                        _(
+                            "The selling price cannot be lower than 90% of the expected price!"
+                        )
                     )
 
     @api.depends("offer_ids.price")
@@ -96,6 +103,11 @@ class RealEstate(models.Model):
     salesperson_id = fields.Many2one("res.users", string="Salesperson")
     buyer_id = fields.Many2one("res.partner", string="Buyer", copy=False)
     tag_ids = fields.Many2many("property.tag")
+    currency_id = fields.Many2one(
+        "res.currency",
+        string="Currency",
+        default=lambda self: self.env.company.currency_id,
+    )
 
     @api.onchange("garden")
     def _onchange_garden(self):
