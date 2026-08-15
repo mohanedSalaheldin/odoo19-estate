@@ -22,6 +22,22 @@ class PropertyType(models.Model):
 
     offer_count = fields.Integer(string="Offers Count", compute="_compute_offer_count")
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        for vals in vals_list:
+            if vals.get("name"):
+                self.env["property.tag"].create(
+                    {
+                        "name": vals.get("name"),
+                    }
+                )
+        return res
+
+    def unlink(self):
+        self.property_ids.state = "canceled"
+        return super().unlink()
+
     @api.depends("offer_ids")
     def _compute_offer_count(self):
         for record in self:

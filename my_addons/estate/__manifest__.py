@@ -12,7 +12,7 @@ Long description of module's purpose
     "category": "Uncategorized",
     "version": "0.1",
     # any module necessary for this one to work correctly
-    "depends": ["base"],
+    "depends": ["base","mail"],
     # always loaded
     "data": [
         "security/res_groups.xml",
@@ -22,6 +22,7 @@ Long description of module's purpose
         "views/property_type_views.xml",
         "views/estate_offer_views.xml",
         "views/property_tag_views.xml",
+        "views/res_users_views.xml",
         "views/estate_menus.xml",
         "views/templates.xml",
     ],

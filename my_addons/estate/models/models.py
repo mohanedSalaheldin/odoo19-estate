@@ -8,6 +8,10 @@ from odoo.tools.float_utils import float_compare, float_is_zero
 
 class RealEstate(models.Model):
     _name = "real.estate"
+    _inherit = [
+        "mail.thread",
+        "mail.activity.mixin",
+    ]
     _description = "estate.estate"
 
     _check_expected_price = models.Constraint(
@@ -34,8 +38,19 @@ class RealEstate(models.Model):
         string="State",
         default="new",
         required=True,
+        tracking=True,
         copy=False,
     )
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_new_or_canceled(self):
+        for record in self:
+            if record.state not in ("new", "canceled"):
+                raise UserError(
+                    _("Only new and canceled properties can be deleted.")
+                )
+
+
 
     def _default_date(self):
         return date.today() + relativedelta(months=3)

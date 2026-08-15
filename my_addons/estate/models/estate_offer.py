@@ -29,12 +29,34 @@ class EstateOffer(models.Model):
         "estate.property.type", related="property_id.property_type_id", store=True
     )
     validity = fields.Integer(default=7)
-    
+
     date_deadline = fields.Date(
         string="Deadline",
         compute="_compute_date_deadline",
         inverse="_inverse_date_deadline",
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("property_id"):
+                property_rec = self.env["real.estate"].browse(
+                    vals["property_id"]
+                )
+
+                if property_rec.offer_ids:
+                    max_offer_price = max(property_rec.offer_ids.mapped("price"))
+                    if vals.get("price", 0) < max_offer_price:
+                        raise UserError(
+                            _(
+                                "The offer amount must be higher than %(amount)s.",
+                                amount=max_offer_price,
+                            )
+                        )
+
+                property_rec.state = "offer_received"
+
+        return super().create(vals_list)
 
     @api.depends("create_date", "validity")
     def _compute_date_deadline(self):
