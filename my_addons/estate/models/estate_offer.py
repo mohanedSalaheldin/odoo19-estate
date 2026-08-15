@@ -29,6 +29,7 @@ class EstateOffer(models.Model):
         "estate.property.type", related="property_id.property_type_id", store=True
     )
     validity = fields.Integer(default=7)
+    
     date_deadline = fields.Date(
         string="Deadline",
         compute="_compute_date_deadline",
